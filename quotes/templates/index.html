@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Quotes to Scrape - Django</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"/>
+</head>
+<body>
+<main class="container">
+    <h1>Quotes to Scrape</h1>
+    <nav style="margin-bottom: 20px; border-bottom: 2px solid; padding-left: 30px">
+        {% if user.is_authenticated %}
+        <ul>
+            <li><a href="{% url 'quotes:author' %}" role="button">Add Author</a></li>
+            <li><a href="{% url 'quotes:quote' %}" role="button">Add Quote</a></li>
+        </ul>
+
+        <ul>
+            <li>Welcome <b>{{ user.username }}!</b></li>
+            <li><a href="{% url 'users:profile' %}" role="button">Profile</a></li>
+            <li><a href="{% url 'users:logout' %}" role="button">Logout</a></li>
+        </ul>
+        {% endif %}
+        {% if not user.is_authenticated %}
+        <ul>
+            <li><a href="{% url 'users:signup' %}" role="button">Sign Up</a></li>
+            <li><a href="{% url 'users:login' %}" role="button">Login</a></li>
+        </ul>
+        {% endif %}
+    </nav>
+
+    {% for quote in quotes %}
+        <div style="margin-bottom: 20px; border: 1px solid; padding: 20px">
+            <h4>{{ quote.quote }} <br></h4>
+            <h5><a href="{% url 'quotes:author_detail' quote.author.id %}" role="button">by {{ quote.author.first_name }} {{ quote.author.last_name }} (about)</a><br></h5>
+        </div>
+    {% endfor %}
+
+</main>
+</body>
+</html>
