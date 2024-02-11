@@ -1,41 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8"/>
-    <title>Quotes to Scrape - Django</title>
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"/>
+    <meta charset="UTF-8">
+    <title>MyApp</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+    <style>
+        .pagination {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+        }
+
+        .pagination p {
+            display: inline;
+            margin: 0 10px;
+        }
+
+        .pagination .first-next {
+            float: left;
+        }
+
+        .pagination .last-previous {
+            float: right;
+        }
+    </style>
+
 </head>
+
 <body>
-<main class="container">
-    <h1>Quotes to Scrape</h1>
-    <nav style="margin-bottom: 20px; border-bottom: 2px solid; padding-left: 30px">
-        {% if user.is_authenticated %}
-        <ul>
-            <li><a href="{% url 'quotes:author' %}" role="button">Add Author</a></li>
-            <li><a href="{% url 'quotes:quote' %}" role="button">Add Quote</a></li>
-        </ul>
+    <main class="container">
+        <nav style="margin-bottom: 20px; border-bottom: 2px solid; padding-left: 30px;">
+            {% if user.is_authenticated %}
+            <div style="width: 50%;">
+                <ul>
+                    <li><a href="{% url 'quotes:add_author' %}" role="button">Add author</a></li>
+                    <li><a href="{% url 'quotes:add_quote' %}" role="button">Add quote</a></li>
+                    <li><a href="{% url 'quotes:add_tag' %}" role="button">Add Tag</a></li>
+                </ul>
+            </div>
+            <div style="width: 50%;">
+                <ul style="float: right; text-align: right;">
+                    <li><a style="width: 150px;" href="{% url 'quotes:scraper' option='author' %}" role="button">Scrap Authors</a></li>
+                    <li><a style="width: 150px;" href="{% url 'quotes:scraper' option='quote' %}" role="button">Scrap Quotes</a></li>
+                    <li><a style="width: 140px;" href="{% url 'quotes:scraper' option='tag' %}" role="button">Scrap Tags</a></li>
+                </ul>
+            </div>
+            {% else %}
+            <ul>
+                <li><a href="{% url 'users:signup' %}" role="button">Sign Up</a></li>
+                <li><a href="{% url 'users:login' %}" role="button">Login</a></li>
+            </ul>
+            {% endif %}
+        </nav>
 
-        <ul>
-            <li>Welcome <b>{{ user.username }}!</b></li>
-            <li><a href="{% url 'users:profile' %}" role="button">Profile</a></li>
-            <li><a href="{% url 'users:logout' %}" role="button">Logout</a></li>
-        </ul>
-        {% endif %}
-        {% if not user.is_authenticated %}
-        <ul>
-            <li><a href="{% url 'users:signup' %}" role="button">Sign Up</a></li>
-            <li><a href="{% url 'users:login' %}" role="button">Login</a></li>
-        </ul>
-        {% endif %}
-    </nav>
+        {% for quote in quotes %}
+        <div style="margin-top:3%; padding-top:2%; clear: both;">
+            <div style="float: left; width: 70%;" class="record">
+                <span style="font-size: 140%">"</span>
+                <span style="font-size: 140%" class="quote">{{ quote.text }}</span>
+                <span style="font-size: 140%">"</span><br>
+                <span style="font-style: italic;" class="author">
+                    <a href="{% url 'quotes:author' quote.author.id %}">{{ quote.author }}</a>
+                </span><br>
 
-    {% for quote in quotes %}
-        <div style="margin-bottom: 20px; border: 1px solid; padding: 20px">
-            <h4>{{ quote.quote }} <br></h4>
-            <h5><a href="{% url 'quotes:author_detail' quote.author.id %}" role="button">by {{ quote.author.first_name }} {{ quote.author.last_name }} (about)</a><br></h5>
+                <span style="font-size: 80%;">Tags:
+                    {% if quote.tags.all %}
+                    {% for tag in quote.tags.all %}
+                    {% if not forloop.first %}, {% endif %}
+                    <span class="tag"><a href="#">{{ tag.tag }}</a></span>
+                    {% endfor %}
+                    {% endif %}
+                </span>
+            </div>
         </div>
-    {% endfor %}
+        <br>
+        {% endfor %}
 
-</main>
+<!--        <div class="pagination">-->
+<!--            {% if page_obj.has_previous %}-->
+<!--            <div class="first-next">-->
+<!--                <a href="?page=1">First</a>-->
+<!--                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>-->
+<!--            </div>-->
+<!--            {% endif %}-->
+
+<!--            <p>{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>-->
+
+<!--            {% if page_obj.has_next %}-->
+<!--            <div class="last-previous">-->
+<!--                <a href="?page={{ page_obj.next_page_number }}" class="next">Next</a>-->
+<!--                <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>-->
+<!--            </div>-->
+<!--            {% endif %}-->
+<!--        </div>-->
+
+    </main>
 </body>
+
 </html>

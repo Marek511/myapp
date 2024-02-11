@@ -1,11 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import QuoteForm, AuthorForm
-from .models import Author, Quote
+from .forms import QuoteForm, AuthorForm, TagForm
+from .models import Author, Quote, ScrapData, Tag
+from bs_scraper import find_data
 
 
 def main(request):
-    quotes = Quote.objects.all()
+    quotes = Quote.objects.select_related('author').all()
     return render(request, 'quotes/index.html', {"quotes": quotes})
 
 
@@ -26,7 +27,7 @@ def add_quote(request):
     return render(request, 'quotes/add_quote.html', {"authors": authors, 'form': QuoteForm()})
 
 
-@login_required
+@login_required()
 def add_author(request):
 
     if request.method == 'POST':
@@ -40,8 +41,44 @@ def add_author(request):
     return render(request, 'quotes/add_author.html', {'form': AuthorForm()})
 
 
-def author_detail(request, author_id):
+@login_required()
+def add_tag(request):
+    if request.method == 'POST':
+        form = TagForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(to='quotes:main')
+        else:
+            return render(request, 'quotes/add_tag.html', {'form': form})
+
+    return render(request, 'quotes/add_tag.html', {'form': TagForm()})
+
+
+def quotes_with_tag(request, tag_id):
+    tag = get_object_or_404(Tag, id=tag_id)
+    quotes = Quote.objects.filter(tags=tag).select_related('author')
+    return render(request, 'quotes/quotes_with_tag.html', {'tag': tag, 'quotes': quotes})
+
+
+def quote(request, quote_id):
+    quote = get_object_or_404(Quote, pk=quote_id)
+    return render(request, 'quotes/quote.html', {"quote": quote})
+
+
+def author(request, author_id):
     author = get_object_or_404(Author, pk=author_id)
-    return render(request, 'quotes/author_detail.html', {"author": author})
+    return render(request, 'quotes/author.html', {"author": author})
+
+
+# Beautiful soup scraper
+
+def scraper(request, option):
+    url = "http://localhost:8000/"
+    data = find_data(url, option)
+
+    scrap_data_object = ScrapData(choice=option, dictionary=data)
+    scrap_data_object.save()
+
+    return render(request, 'quotes/scraped_data.html', {'scraped_data': data})
 
 

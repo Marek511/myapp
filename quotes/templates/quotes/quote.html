@@ -1,0 +1,8 @@
+{% extends "quotes/base.html" %}
+
+{% block content %}
+
+<p>Quote:<br> <b>{{quote.text}}</b></p>
+<p>Author: <b>{{quote.author}}</b></p>
+<p>Tags: <small> {{ quote.tags|tags }} </small></p>
+{% endblock %}

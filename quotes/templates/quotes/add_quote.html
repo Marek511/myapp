@@ -1,7 +1,7 @@
-{% extends "quotes/templates/base.html" %}
+{% extends "quotes/base.html" %}
 
 {% block content %}
-  <form method="POST" action="{% url 'quotes:quote' %}">
+  <form method="POST" action="{% url 'quotes:add_quote' %}">
     {% csrf_token %}
     <div style="padding: 10px">
       <label>Enter Quote's description: {{ form.quote }}</label>
@@ -11,6 +11,11 @@
     <div style="padding: 10px">
       <label>Select Author: {{ form.author }}</label>
       <span>{{ form.errors.author }}</span>
+    </div>
+
+    <div style="padding: 10px">
+      <label>Select Quote: {{ form.text }}</label>
+      <span>{{ form.errors.quote }}</span>
     </div>
 
     <div class="grid">
