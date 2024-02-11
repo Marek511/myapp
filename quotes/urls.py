@@ -11,5 +11,4 @@ urlpatterns = [
     path('scraper/<str:option>/', views.scraper, name='scraper'),
     path('author/<int:author_id>', views.author, name='author'),
     path('quote/<int:quote_id>', views.quote, name='quote'),
-    path('quotes_with_tag/<int:tag_id>/', views.quotes_with_tag, name='quotes_with_tag'),
 ]
