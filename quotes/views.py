@@ -54,12 +54,6 @@ def add_tag(request):
     return render(request, 'quotes/add_tag.html', {'form': TagForm()})
 
 
-def quotes_with_tag(request, tag_id):
-    tag = get_object_or_404(Tag, id=tag_id)
-    quotes = Quote.objects.filter(tags=tag).select_related('author')
-    return render(request, 'quotes/quotes_with_tag.html', {'tag': tag, 'quotes': quotes})
-
-
 def quote(request, quote_id):
     quote = get_object_or_404(Quote, pk=quote_id)
     return render(request, 'quotes/quote.html', {"quote": quote})
