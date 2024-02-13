@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import QuoteForm, AuthorForm, TagForm
-from .models import Author, Quote, ScrapData, Tag
+from .models import Author, Quote, ScrapData
 from bs_scraper import find_data
+from django.conf import settings
 
 
 def main(request):
@@ -27,7 +28,7 @@ def add_quote(request):
     return render(request, 'quotes/add_quote.html', {"authors": authors, 'form': QuoteForm()})
 
 
-@login_required()
+@login_required
 def add_author(request):
 
     if request.method == 'POST':
@@ -41,7 +42,7 @@ def add_author(request):
     return render(request, 'quotes/add_author.html', {'form': AuthorForm()})
 
 
-@login_required()
+@login_required
 def add_tag(request):
     if request.method == 'POST':
         form = TagForm(request.POST)
@@ -54,7 +55,6 @@ def add_tag(request):
     return render(request, 'quotes/add_tag.html', {'form': TagForm()})
 
 
-
 def quote(request, quote_id):
     quote = get_object_or_404(Quote, pk=quote_id)
     return render(request, 'quotes/quote.html', {"quote": quote})
@@ -65,11 +65,10 @@ def author(request, author_id):
     return render(request, 'quotes/author.html', {"author": author})
 
 
-# Beautiful soup scraper
-
 def scraper(request, option):
-    url = "http://localhost:8000/"
-    data = find_data(url, option)
+
+    host = settings.HOST
+    data = find_data(host, option)
 
     scrap_data_object = ScrapData(choice=option, dictionary=data)
     scrap_data_object.save()
